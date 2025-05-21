@@ -1,0 +1,16 @@
+# _config.yml
+title: ver8en
+description: Lass uns zusammen ver8en
+theme: null  # Deaktiviert GitHub's Standard Jekyll Theme
+plugins: []  # Keine Plugins verwenden
+
+# Domain (wenn GitHub Pages Custom Domain verbunden ist)
+# OPTIONAL: Wenn du willst, kannst du sie hier explizit setzen:
+# domain: meinedomain.de
+
+# Verhindert, dass GitHub versucht, Jekyll zu verarbeiten
+exclude:
+  - README.md
+  - LICENSE
+  - .gitignore
+  - _config.yml
