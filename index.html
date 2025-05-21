@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mein Cooler Discord Server</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/An_illustrated_dungeon_background_DALLE2.png/640px-An_illustrated_dungeon_background_DALLE2.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      color: white;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+
+    header {
+      text-align: center;
+      padding: 50px 20px;
+      animation: slideIn 2s ease-out;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-shadow: 0 0 10px #ff1a1a;
+      animation: neonGlow 1.5s infinite alternate;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 40px;
+      padding: 50px 20px;
+      animation: fadeInUp 2.5s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    iframe {
+      box-shadow: 0 0 30px rgba(255, 26, 26, 0.7);
+      border-radius: 20px;
+      animation: pulse 3s infinite;
+    }
+
+    .pulse-circle {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,26,26,0.2) 0%, transparent 70%);
+      animation: zoomOut 3s infinite;
+      z-index: 0;
+    }
+
+    .flame.left,
+    .flame.right {
+      position: fixed;
+      top: 0;
+      width: 280px;
+      height: 100%;
+      background-image: url('https://i.pinimg.com/originals/d5/24/86/d52486969a2e2e1440a04469561b4107.gif');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 1;
+      mix-blend-mode: screen;
+    }
+
+    .flame.left {
+      left: 0;
+    }
+
+    .flame.right {
+      right: 0;
+      transform: scaleX(-1);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes neonGlow {
+      from { text-shadow: 0 0 10px #ff1a1a, 0 0 20px #ff1a1a; }
+      to { text-shadow: 0 0 20px #ff1a1a, 0 0 30px #ff1a1a; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(255,26,26,0.7); }
+      50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(255,26,26,1); }
+    }
+
+    @keyframes zoomOut {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+      100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="flame left"></div>
+  <div class="flame right"></div>
+  <header>
+    <h1>Lass uns zusammen ver8en!</h1>
+  </header>
+  <div class="container">
+    <div class="pulse-circle"></div>
+    <iframe src="https://discord.com/widget?id=951252419961028658&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+  </div>
+</body>
+</html>
