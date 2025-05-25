@@ -39,6 +39,20 @@
       text-shadow: 0 0 10px #ff1a1a;
     }
 
+    .counter {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 50, 0, 0.7);
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(255, 100, 0, 0.9);
+      animation: pulseGlow 2s infinite;
+      z-index: 1000;
+    }
+
     .sr-only {
       position: absolute;
       width: 1px;
@@ -107,12 +121,8 @@
     }
 
     @keyframes pulseScale {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.05);
-      }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
     @keyframes pulseGlow {
@@ -121,8 +131,8 @@
         box-shadow: 0 0 30px rgba(255, 235, 59, 0.9);
       }
       50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 60px rgba(255, 64, 0, 0.7);
+        transform: scale(1.1);
+        box-shadow: 0 0 60px rgba(255, 64, 0, 0.8);
       }
     }
   </style>
@@ -137,10 +147,26 @@
   <div class="container">
     <iframe src="https://discord.com/widget?id=951252419961028658&theme=dark" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
   </div>
+  <div class="counter" id="flameCounter">🔥 0</div>
 
   <script>
     let flameCount = 0;
     const maxFlames = 15;
+    let collectedFlames = 0;
+    let lastMouseMoveTime = Date.now();
+
+    function updateCounter() {
+      const counter = document.getElementById("flameCounter");
+      counter.innerText = `🔥 ${collectedFlames}`;
+      counter.style.animation = "none";
+      counter.offsetHeight;
+      counter.style.animation = "pulseGlow 1s";
+    }
+
+    function resetCounter() {
+      collectedFlames = 0;
+      updateCounter();
+    }
 
     function createSpark(x, y) {
       const spark = document.createElement('div');
@@ -155,9 +181,7 @@
       spark.style.left = `${x + offsetX}px`;
       spark.style.top = `${y + offsetY}px`;
 
-      setTimeout(() => {
-        spark.remove();
-      }, 500 + Math.random() * 500);
+      setTimeout(() => spark.remove(), 500 + Math.random() * 500);
     }
 
     function createBouncingFlame() {
@@ -181,9 +205,20 @@
       let radius = 60 + Math.random() * 40;
 
       function move() {
-        const now = performance.now();
+        const now = Date.now();
+        const idle = now - lastMouseMoveTime > 1500;
 
         if (following) {
+          if (idle) {
+            flame.style.animation = 'fadeOut 1s forwards';
+            setTimeout(() => {
+              flame.remove();
+              flameCount--;
+              resetCounter();
+            }, 1000);
+            return;
+          }
+
           angle += 0.05;
           const offsetX = Math.cos(angle) * radius;
           const offsetY = Math.sin(angle) * radius;
@@ -191,15 +226,6 @@
           posY = mouseY + offsetY - 50;
 
           createSpark(posX + 50, posY + 50);
-
-          if (now - followStartTime > 3000) {
-            flame.style.animation = 'fadeOut 1s forwards';
-            setTimeout(() => {
-              flame.remove();
-              flameCount--;
-            }, 1000);
-            return;
-          }
         } else {
           posX += velX;
           posY += velY;
@@ -214,6 +240,8 @@
           if (distance < 120) {
             following = true;
             followStartTime = now;
+            collectedFlames++;
+            updateCounter();
           }
         }
 
@@ -232,6 +260,7 @@
     window.addEventListener('mousemove', e => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      lastMouseMoveTime = Date.now();
     });
 
     createBouncingFlame();
