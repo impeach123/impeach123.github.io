@@ -148,7 +148,7 @@
     <iframe src="https://discord.com/widget?id=951252419961028658&theme=dark" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
   </div>
   <div class="counter" id="flameCounter" style="background: none; padding: 0; border-radius: 0; box-shadow: none; mix-blend-mode: screen;">
-  <div style="position: relative; display: inline-block; padding: 4px; border-radius: 12px; mix-blend-mode: screen;">
+  <div style="position: relative; display: inline-block; padding: 0; mix-blend-mode: screen;">
     <img src="https://i.pinimg.com/originals/d5/24/86/d52486969a2e2e1440a04469561b4107.gif" alt="Flammenzähler" style="height: 64px; width: 64px; display: block; mix-blend-mode: screen; background: transparent;">
     <span id="flameCount" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 0 0 5px #ff4500; pointer-events: none;">0</span>
   </div>
@@ -156,7 +156,7 @@
 
   <script>
     let flameCount = 0;
-    const maxFlames = 999999999;
+    const maxFlames = 15;
     let collectedFlames = 0;
     let lastMouseMoveTime = Date.now();
 
@@ -167,7 +167,10 @@ countEl.innerText = collectedFlames;
 const scale = 1 + collectedFlames * 0.05;
 document.querySelector("#flameCounter > div").style.transform = `scale(${scale})`;
       const glowEl = document.getElementById("flameCount");
-glowEl.style.textShadow = "0 0 20px #ff4500, 0 0 40px #ff9933, 0 0 60px #ffff66";
+let glowSize = collectedFlames < 10 ? 20 : 40;
+let glowColor = collectedFlames < 10 ? 'white' : collectedFlames < 20 ? '#ff9933' : '#ff3333';
+glowEl.style.color = glowColor;
+glowEl.style.textShadow = `0 0 ${glowSize}px ${glowColor}, 0 0 ${glowSize + 20}px #ff9933, 0 0 ${glowSize + 40}px #ffff66`;
 setTimeout(() => {
   glowEl.style.textShadow = "0 0 5px #ff4500";
 }, 500);
