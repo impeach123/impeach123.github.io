@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <title>Lass uns zusammen ver8en!</title>
   <style>
     html, body {
@@ -31,13 +30,13 @@
     header {
       text-align: center;
       padding: 50px 20px;
-      animation: slideIn 2s ease-out;
+      position: relative;
+      z-index: 10;
     }
 
     h1 {
       font-size: 3rem;
       text-shadow: 0 0 10px #ff1a1a;
-      animation: neonGlow 1.5s infinite alternate;
     }
 
     .sr-only {
@@ -55,9 +54,8 @@
       flex-direction: column;
       gap: 40px;
       padding: 50px 20px;
-      animation: fadeInUp 2.5s ease;
       position: relative;
-      z-index: 1;
+      z-index: 5;
     }
 
     iframe {
@@ -70,19 +68,6 @@
       animation: pulseGlow 3s infinite;
     }
 
-    .pulse-circle {
-      position: absolute;
-      top: 60%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,26,26,0.2) 0%, transparent 70%);
-      animation: zoomOut 3s infinite;
-      z-index: 0;
-    }
-
     .flame {
       position: absolute;
       width: 100px;
@@ -92,25 +77,25 @@
       background-repeat: no-repeat;
       mix-blend-mode: screen;
       pointer-events: none;
-      z-index: 0;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+      z-index: 1;
     }
 
-    @keyframes slideIn {
-      from { transform: translateY(-100px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    .pulsing-logo {
+      height: 100px;
+      animation: pulseScale 3s infinite;
     }
 
-    @keyframes fadeInUp {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
 
-    @keyframes neonGlow {
-      from { text-shadow: 0 0 10px #FFD147, 0 0 20px #ff1a1a; }
-      to { text-shadow: 0 0 20px #FFD147, 0 0 30px #ff661a; }
+    @keyframes fadeOut {
+      to { opacity: 0; }
     }
 
-    @keyframes pulse {
+    @keyframes pulseScale {
       0%, 100% {
         transform: scale(1);
       }
@@ -118,43 +103,8 @@
         transform: scale(1.05);
       }
     }
-      50% { transform: scale(1.05); box-shadow: none; }
-    }
 
-    @keyframes zoomOut {
-      0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
-      100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-    }
-      @media (max-width: 600px) {
-      header {
-        padding: 30px 10px;
-      }
-
-      h1 img {
-        height: 70px;
-      }
-
-      .container {
-        gap: 20px;
-        padding: 30px 10px;
-      }
-
-      iframe {
-        width: 95vw;
-        height: 50vh;
-        min-height: 400px;
-      }
-
-      .pulse-circle {
-        width: 200px;
-        height: 200px;
-      }
-    }
-      .pulsing-logo {
-      height: 100px;
-      animation: pulse 3s infinite;
-    }
-      @keyframes pulseGlow {
+    @keyframes pulseGlow {
       0%, 100% {
         transform: scale(1);
         box-shadow: 0 0 30px rgba(255, 235, 59, 0.9);
@@ -167,14 +117,13 @@
   </style>
 </head>
 <body>
-  <header style="position: relative; z-index: 2;">
+  <header>
     <h1>
       <span class="sr-only">Lass uns zusammen ver8en!</span>
       <img src="flamingtext_com-2226477146.gif" alt="Lass uns zusammen ver8en!" class="pulsing-logo">
     </h1>
   </header>
   <div class="container">
-    <div class="pulse-circle"></div>
     <iframe src="https://discord.com/widget?id=951252419961028658&theme=dark" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
   </div>
 
@@ -194,19 +143,45 @@
       let posY = Math.random() * (window.innerHeight - 100);
       let velX = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
       let velY = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
-
-      let hue = Math.random() * 60; // yellow-red range
+      let hue = Math.random() * 60;
       flame.style.filter = `hue-rotate(${hue}deg)`;
 
+      let following = false;
+      let followStartTime = null;
+
       function move() {
-        const flameWidth = flame.offsetWidth;
-        const flameHeight = flame.offsetHeight;
+        const now = performance.now();
 
-        posX += velX;
-        posY += velY;
+        if (following) {
+          const dx = mouseX - posX;
+          const dy = mouseY - posY;
+          posX += dx * 0.05;
+          posY += dy * 0.05;
 
-        if (posX + flameWidth > window.innerWidth || posX < 0) velX *= -1;
-        if (posY + flameHeight > window.innerHeight || posY < 0) velY *= -1;
+          if (now - followStartTime > 3000) {
+            flame.style.animation = 'fadeOut 1s forwards';
+            setTimeout(() => {
+              flame.remove();
+              flameCount--;
+            }, 1000);
+            return;
+          }
+        } else {
+          posX += velX;
+          posY += velY;
+
+          const flameWidth = flame.offsetWidth;
+          const flameHeight = flame.offsetHeight;
+
+          if (posX + flameWidth > window.innerWidth || posX < 0) velX *= -1;
+          if (posY + flameHeight > window.innerHeight || posY < 0) velY *= -1;
+
+          const distance = Math.hypot(mouseX - posX, mouseY - posY);
+          if (distance < 120) {
+            following = true;
+            followStartTime = now;
+          }
+        }
 
         flame.style.left = `${posX}px`;
         flame.style.top = `${posY}px`;
@@ -216,6 +191,14 @@
 
       move();
     }
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    window.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
 
     createBouncingFlame();
     setInterval(createBouncingFlame, 3000);
