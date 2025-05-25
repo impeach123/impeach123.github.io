@@ -40,6 +40,14 @@
       animation: neonGlow 1.5s infinite alternate;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      clip: rect(0 0 0 0);
+      overflow: hidden;
+    }
+
     .container {
       display: flex;
       justify-content: center;
@@ -53,9 +61,13 @@
     }
 
     iframe {
+      width: 90vw;
+      max-width: 400px;
+      height: 60vh;
+      min-height: 450px;
       box-shadow: 0 0 30px rgba(255, 26, 26, 0.7);
       border-radius: 20px;
-      animation: pulse 3s infinite;
+      animation: pulseGlow 3s infinite;
     }
 
     .pulse-circle {
@@ -99,27 +111,81 @@
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 235, 59, 0.9); }
-      50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(255, 64, 0, 0.7); }
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+      50% { transform: scale(1.05); box-shadow: none; }
     }
 
     @keyframes zoomOut {
       0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
       100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
     }
+      @media (max-width: 600px) {
+      header {
+        padding: 30px 10px;
+      }
+
+      h1 img {
+        height: 70px;
+      }
+
+      .container {
+        gap: 20px;
+        padding: 30px 10px;
+      }
+
+      iframe {
+        width: 95vw;
+        height: 50vh;
+        min-height: 400px;
+      }
+
+      .pulse-circle {
+        width: 200px;
+        height: 200px;
+      }
+    }
+      .pulsing-logo {
+      height: 100px;
+      animation: pulse 3s infinite;
+    }
+      @keyframes pulseGlow {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 30px rgba(255, 235, 59, 0.9);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 60px rgba(255, 64, 0, 0.7);
+      }
+    }
   </style>
 </head>
 <body>
   <header style="position: relative; z-index: 2;">
-    <h1><img src="flamingtext_com-2226477146.gif" alt="Titel" style="height: 140px;"></h1>
+    <h1>
+      <span class="sr-only">Lass uns zusammen ver8en!</span>
+      <img src="flamingtext_com-2226477146.gif" alt="Lass uns zusammen ver8en!" class="pulsing-logo">
+    </h1>
   </header>
   <div class="container">
     <div class="pulse-circle"></div>
-    <iframe src="https://discord.com/widget?id=951252419961028658&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+    <iframe src="https://discord.com/widget?id=951252419961028658&theme=dark" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
   </div>
 
   <script>
+    let flameCount = 0;
+    const maxFlames = 15;
+
     function createBouncingFlame() {
+      if (flameCount >= maxFlames) return;
+      flameCount++;
+
       const flame = document.createElement('div');
       flame.className = 'flame';
       document.body.appendChild(flame);
@@ -128,6 +194,9 @@
       let posY = Math.random() * (window.innerHeight - 100);
       let velX = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
       let velY = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
+
+      let hue = Math.random() * 60; // yellow-red range
+      flame.style.filter = `hue-rotate(${hue}deg)`;
 
       function move() {
         const flameWidth = flame.offsetWidth;
