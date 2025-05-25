@@ -82,9 +82,20 @@
       z-index: 1;
     }
 
+    .spark {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, rgba(255,255,150,1) 0%, rgba(255,150,0,0.8) 60%, transparent 100%);
+      border-radius: 50%;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .pulsing-logo {
       height: 100px;
-      animation: pulseScale 3s infinite;
+      animation: pulseScale 3s infinite ease-in-out;
     }
 
     @keyframes fadeIn {
@@ -131,6 +142,24 @@
     let flameCount = 0;
     const maxFlames = 15;
 
+    function createSpark(x, y) {
+      const spark = document.createElement('div');
+      spark.className = 'spark';
+      document.body.appendChild(spark);
+
+      const angle = Math.random() * 2 * Math.PI;
+      const radius = Math.random() * 40;
+      const offsetX = Math.cos(angle) * radius;
+      const offsetY = Math.sin(angle) * radius;
+
+      spark.style.left = `${x + offsetX}px`;
+      spark.style.top = `${y + offsetY}px`;
+
+      setTimeout(() => {
+        spark.remove();
+      }, 500 + Math.random() * 500);
+    }
+
     function createBouncingFlame() {
       if (flameCount >= maxFlames) return;
       flameCount++;
@@ -157,6 +186,8 @@
           const dy = mouseY - posY;
           posX += dx * 0.05;
           posY += dy * 0.05;
+
+          createSpark(posX + 50, posY + 50);
 
           if (now - followStartTime > 3000) {
             flame.style.animation = 'fadeOut 1s forwards';
