@@ -177,15 +177,18 @@
 
       let following = false;
       let followStartTime = null;
+      let angle = Math.random() * Math.PI * 2;
+      let radius = 60 + Math.random() * 40;
 
       function move() {
         const now = performance.now();
 
         if (following) {
-          const dx = mouseX - posX;
-          const dy = mouseY - posY;
-          posX += dx * 0.05;
-          posY += dy * 0.05;
+          angle += 0.05;
+          const offsetX = Math.cos(angle) * radius;
+          const offsetY = Math.sin(angle) * radius;
+          posX = mouseX + offsetX - 50;
+          posY = mouseY + offsetY - 50;
 
           createSpark(posX + 50, posY + 50);
 
