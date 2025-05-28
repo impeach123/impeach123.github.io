@@ -2,12 +2,6 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <!-- Open Graph -->
-  <meta property="og:title" content="This Website Changed My Life." />
-  <meta property="og:description" content="I came looking for answers. I found a dead half way decomposed racoon." />
-  <meta property="og:image" content="pepe-meme.gif" />
-  <meta property="og:url" content="https://ver8en.de/" />
-  <meta property="og:type" content="website" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lass uns zusammen ver8en!</title>
   <style>
@@ -54,8 +48,6 @@
       border-radius: 12px;
       font-size: 1.5rem;
       font-weight: bold;
-      
-      
       z-index: 1000;
     }
 
@@ -154,11 +146,11 @@
     <iframe src="https://discord.com/widget?id=951252419961028658&theme=dark" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
   </div>
   <div class="counter" id="flameCounter" style="background: none; padding: 0; border-radius: 0; box-shadow: none; mix-blend-mode: screen;">
-  <div style="position: relative; display: inline-block; padding: 0; mix-blend-mode: screen;">
-    <img src="https://i.pinimg.com/originals/d5/24/86/d52486969a2e2e1440a04469561b4107.gif" alt="Flammenzähler" style="height: 64px; width: 64px; display: block; mix-blend-mode: screen; background: transparent;">
-    <span id="flameCount" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 0 0 5px #ff4500; pointer-events: none;">0</span>
+    <div style="position: relative; display: inline-block; padding: 0; mix-blend-mode: screen;">
+      <img src="https://i.pinimg.com/originals/d5/24/86/d52486969a2e2e1440a04469561b4107.gif" alt="Flammenzähler" style="height: 64px; width: 64px; display: block; mix-blend-mode: screen; background: transparent;">
+      <span id="flameCount" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 0 0 5px #ff4500; pointer-events: none;">0</span>
+    </div>
   </div>
-</div>
 
   <script>
     let flameCount = 0;
@@ -169,17 +161,17 @@
     function updateCounter() {
       const counter = document.getElementById("flameCounter");
       const countEl = document.getElementById("flameCount");
-countEl.innerText = collectedFlames;
-const scale = 1 + collectedFlames * 0.05;
-document.querySelector("#flameCounter > div").style.transform = `scale(${scale})`;
+      countEl.innerText = collectedFlames;
+      const scale = 1 + collectedFlames * 0.05;
+      document.querySelector("#flameCounter > div").style.transform = `scale(${scale})`;
       const glowEl = document.getElementById("flameCount");
-let glowSize = collectedFlames < 10 ? 20 : 40;
-let glowColor = collectedFlames < 10 ? 'white' : collectedFlames < 20 ? '#ff9933' : '#ff3333';
-glowEl.style.color = glowColor;
-glowEl.style.textShadow = `0 0 ${glowSize}px ${glowColor}, 0 0 ${glowSize + 20}px #ff9933, 0 0 ${glowSize + 40}px #ffff66`;
-setTimeout(() => {
-  glowEl.style.textShadow = "0 0 5px #ff4500";
-}, 500);
+      let glowSize = collectedFlames < 10 ? 20 : 40;
+      let glowColor = collectedFlames < 10 ? 'white' : collectedFlames < 20 ? '#ff9933' : '#ff3333';
+      glowEl.style.color = glowColor;
+      glowEl.style.textShadow = `0 0 ${glowSize}px ${glowColor}, 0 0 ${glowSize + 20}px #ff9933, 0 0 ${glowSize + 40}px #ffff66`;
+      setTimeout(() => {
+        glowEl.style.textShadow = "0 0 5px #ff4500";
+      }, 500);
     }
 
     function resetCounter() {
@@ -215,8 +207,11 @@ setTimeout(() => {
       let posY = Math.random() * (window.innerHeight - 100);
       let velX = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
       let velY = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
-      let hue = Math.random() * 60;
-      flame.style.filter = `hue-rotate(${hue}deg)`;
+
+      if (collectedFlames >= 10) {
+        let hue = Math.random() * 360;
+        flame.style.filter = `hue-rotate(${hue}deg)`;
+      }
 
       let following = false;
       let followStartTime = null;
