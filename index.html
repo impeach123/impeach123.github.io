@@ -171,6 +171,16 @@
   will-change: filter;
 }
 
+@keyframes spinEverything {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-everything * {
+  animation: spinEverything 5s linear infinite;
+  transform-origin: center center;
+}
+
 </style>
 </head>
 <body>
@@ -213,8 +223,10 @@
 
       if (collectedFlames >= 50) {
   document.body.classList.add("hue-rotate-background");
+  if (collectedFlames >= 65) document.body.classList.add("spin-everything");
 } else {
   document.body.classList.remove("hue-rotate-background");
+  document.body.classList.remove("spin-everything");
 }
     }
 
@@ -287,6 +299,11 @@
 
     createBouncingFlame();
     setInterval(createBouncingFlame, 3000);
-  </script>
+  window.addEventListener('keydown', e => {
+  if (e.key === '+') {
+    createBouncingFlame();
+  }
+});
+</script>
 </body>
 </html>
