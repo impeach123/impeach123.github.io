@@ -95,6 +95,30 @@
       100% { box-shadow: 0 0 40px violet; }
     }
 
+    @keyframes rainbowSpark {
+      0% { background: radial-gradient(circle, red 0%, transparent 100%); }
+      16% { background: radial-gradient(circle, orange 0%, transparent 100%); }
+      32% { background: radial-gradient(circle, yellow 0%, transparent 100%); }
+      48% { background: radial-gradient(circle, green 0%, transparent 100%); }
+      64% { background: radial-gradient(circle, blue 0%, transparent 100%); }
+      80% { background: radial-gradient(circle, indigo 0%, transparent 100%); }
+      100% { background: radial-gradient(circle, violet 0%, transparent 100%); }
+    }
+
+    .spark {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .spark.rainbow {
+      animation: rainbowSpark 1s infinite linear;
+    }
+
     .flame {
       position: absolute;
       width: 100px;
@@ -107,17 +131,6 @@
       opacity: 0;
       animation: fadeIn 1s forwards;
       z-index: 1;
-    }
-
-    .spark {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background: radial-gradient(circle, rgba(255,255,150,1) 0%, rgba(255,150,0,0.8) 60%, transparent 100%);
-      border-radius: 50%;
-      opacity: 0.8;
-      pointer-events: none;
-      z-index: 0;
     }
 
     .pulsing-logo {
@@ -166,34 +179,27 @@
       <span id="flameCount" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 0 0 5px #ff4500; pointer-events: none;">0</span>
     </div>
   </div>
-
   <script>
     let flameCount = 0;
     const maxFlames = 999999;
     let collectedFlames = 0;
     let lastMouseMoveTime = Date.now();
+    let mouseX = 0;
+    let mouseY = 0;
 
     function updateCounter() {
-      const counter = document.getElementById("flameCounter");
       const countEl = document.getElementById("flameCount");
       countEl.innerText = collectedFlames;
-      const scale = 1 + collectedFlames * 0.05;
-      document.querySelector("#flameCounter > div").style.transform = `scale(${scale})`;
-      const glowEl = document.getElementById("flameCount");
+      document.querySelector("#flameCounter > div").style.transform = `scale(${1 + collectedFlames * 0.05})`;
       let glowSize = collectedFlames < 10 ? 20 : 40;
       let glowColor = collectedFlames < 10 ? 'white' : collectedFlames < 20 ? '#ff9933' : '#ff3333';
-      glowEl.style.color = glowColor;
-      glowEl.style.textShadow = `0 0 ${glowSize}px ${glowColor}, 0 0 ${glowSize + 20}px #ff9933, 0 0 ${glowSize + 40}px #ffff66`;
-      setTimeout(() => {
-        glowEl.style.textShadow = "0 0 5px #ff4500";
-      }, 500);
+      countEl.style.color = glowColor;
+      countEl.style.textShadow = `0 0 ${glowSize}px ${glowColor}, 0 0 ${glowSize + 20}px #ff9933, 0 0 ${glowSize + 40}px #ffff66`;
+      setTimeout(() => countEl.style.textShadow = "0 0 5px #ff4500", 500);
 
       const iframe = document.getElementById("discordWidget");
-      if (collectedFlames >= 20) {
-        iframe.classList.add("rainbow-glow");
-      } else {
-        iframe.classList.remove("rainbow-glow");
-      }
+      if (collectedFlames >= 20) iframe.classList.add("rainbow-glow");
+      else iframe.classList.remove("rainbow-glow");
     }
 
     function resetCounter() {
@@ -204,23 +210,22 @@
     function createSpark(x, y) {
       const spark = document.createElement('div');
       spark.className = 'spark';
-      document.body.appendChild(spark);
+      if (collectedFlames >= 30) spark.classList.add('rainbow');
+      else spark.style.background = 'radial-gradient(circle, rgba(255,255,150,1) 0%, rgba(255,150,0,0.8) 60%, transparent 100%)';
 
+      document.body.appendChild(spark);
       const angle = Math.random() * 2 * Math.PI;
       const radius = Math.random() * 40;
       const offsetX = Math.cos(angle) * radius;
       const offsetY = Math.sin(angle) * radius;
-
       spark.style.left = `${x + offsetX}px`;
       spark.style.top = `${y + offsetY}px`;
-
       setTimeout(() => spark.remove(), 500 + Math.random() * 500);
     }
 
     function createBouncingFlame() {
       if (flameCount >= maxFlames) return;
       flameCount++;
-
       const flame = document.createElement('div');
       flame.className = 'flame';
       document.body.appendChild(flame);
@@ -230,68 +235,41 @@
       let velX = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
       let velY = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 3);
 
-      if (collectedFlames >= 10) {
-        let hue = Math.random() * 360;
-        flame.style.filter = `hue-rotate(${hue}deg)`;
-      }
+      if (collectedFlames >= 10) flame.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
 
       let following = false;
-      let followStartTime = null;
       let angle = Math.random() * Math.PI * 2;
       let radius = 60 + Math.random() * 40;
 
       function move() {
-        const now = Date.now();
-        const idle = now - lastMouseMoveTime > 1500;
-
         if (following) {
-          if (idle) {
+          if (Date.now() - lastMouseMoveTime > 1500) {
             flame.style.animation = 'fadeOut 1s forwards';
-            setTimeout(() => {
-              flame.remove();
-              flameCount--;
-              resetCounter();
-            }, 1000);
+            setTimeout(() => { flame.remove(); flameCount--; resetCounter(); }, 1000);
             return;
           }
-
           angle += 0.05;
-          const offsetX = Math.cos(angle) * radius;
-          const offsetY = Math.sin(angle) * radius;
-          posX = mouseX + offsetX - 50;
-          posY = mouseY + offsetY - 50;
-
+          posX = mouseX + Math.cos(angle) * radius - 50;
+          posY = mouseY + Math.sin(angle) * radius - 50;
           createSpark(posX + 50, posY + 50);
         } else {
           posX += velX;
           posY += velY;
-
-          const flameWidth = flame.offsetWidth;
-          const flameHeight = flame.offsetHeight;
-
-          if (posX + flameWidth > window.innerWidth || posX < 0) velX *= -1;
-          if (posY + flameHeight > window.innerHeight || posY < 0) velY *= -1;
-
-          const distance = Math.hypot(mouseX - posX, mouseY - posY);
-          if (distance < 120) {
+          if (posX <= 0 || posX + flame.offsetWidth >= window.innerWidth) velX *= -1;
+          if (posY <= 0 || posY + flame.offsetHeight >= window.innerHeight) velY *= -1;
+          if (Math.hypot(mouseX - posX, mouseY - posY) < 120) {
             following = true;
-            followStartTime = now;
             collectedFlames++;
             updateCounter();
           }
         }
-
         flame.style.left = `${posX}px`;
         flame.style.top = `${posY}px`;
-
         requestAnimationFrame(move);
       }
 
       move();
     }
-
-    let mouseX = 0;
-    let mouseY = 0;
 
     window.addEventListener('mousemove', e => {
       mouseX = e.clientX;
